@@ -1,0 +1,40 @@
+<?php
+class GestoreUtenti {
+    private $fileUtenti = __DIR__ . '/../dati/utenti.json';
+
+    private function leggiUtenti() {
+        if (!file_exists($this->fileUtenti)) return [];
+        $json = file_get_contents($this->fileUtenti);
+        return json_decode($json, true) ?: [];
+    }
+
+    private function salvaUtenti($utenti) {
+        file_put_contents($this->fileUtenti, json_encode($utenti, JSON_PRETTY_PRINT));
+    }
+
+    public function registraUtente($username, $password) {
+        $utenti = $this->leggiUtenti();
+        foreach ($utenti as $u) {
+            if ($u['username'] === $username) {
+                return false; // utente già esistente
+            }
+        }
+        $utenti[] = [
+            'username' => $username,
+            'password' => password_hash($password, PASSWORD_DEFAULT)
+        ];
+        $this->salvaUtenti($utenti);
+        return true;
+    }
+
+    public function verificaLogin($username, $password) {
+        $utenti = $this->leggiUtenti();
+        foreach ($utenti as $u) {
+            if ($u['username'] === $username && password_verify($password, $u['password'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+?>
