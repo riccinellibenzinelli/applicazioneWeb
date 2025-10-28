@@ -1,0 +1,12 @@
+<?php
+session_start();
+if (!isset($_SESSION['utente'])) {
+    header('Location: index.php');
+    exit;
+}
+?>
+<h2>Benvenuto, <?= htmlspecialchars($_SESSION['utente']) ?></h2>
+<ul>
+    <li><a href="persone.php">Gestione persone</a></li>
+    <li><a href="logout.php">Logout</a></li>
+</ul>
