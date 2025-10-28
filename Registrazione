@@ -1,0 +1,20 @@
+<?php
+require 'classi/GestoreUtenti.php';
+$gestore = new GestoreUtenti();
+
+if ($_POST) {
+    if ($gestore->registraUtente($_POST['username'], $_POST['password'])) {
+        echo "Registrazione completata. <a href='index.php'>Vai al login</a>";
+        exit;
+    } else {
+        $errore = "Utente già esistente.";
+    }
+}
+?>
+<form method="post">
+    <h2>Registrazione</h2>
+    <input name="username" placeholder="Username" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button>Registrati</button>
+    <?php if (!empty($errore)) echo "<p style='color:red'>$errore</p>"; ?>
+</form>
