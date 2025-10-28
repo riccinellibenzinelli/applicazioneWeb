@@ -1,0 +1,54 @@
+<?php
+class GestorePersone {
+    private $filePersone = __DIR__ . '/../dati/persone.json';
+
+    private function leggiPersone() {
+        if (!file_exists($this->filePersone)) return [];
+        $json = file_get_contents($this->filePersone);
+        return json_decode($json, true) ?: [];
+    }
+
+    private function salvaPersone($persone) {
+        file_put_contents($this->filePersone, json_encode($persone, JSON_PRETTY_PRINT));
+    }
+
+    public function aggiungiPersona($cf, $nome, $cognome, $dataNascita) {
+        $persone = $this->leggiPersone();
+        $persone[] = [
+            'codice_fiscale' => $cf,
+            'nome' => $nome,
+            'cognome' => $cognome,
+            'data_nascita' => $dataNascita
+        ];
+        $this->salvaPersone($persone);
+    }
+
+    public function tutteLePersone() {
+        return $this->leggiPersone();
+    }
+
+    public function trovaPerCognome($cognome) {
+        return array_filter($this->leggiPersone(), fn($p) => strtolower($p['cognome']) === strtolower($cognome));
+    }
+
+    public function nateDopo($data) {
+        return array_filter($this->leggiPersone(), fn($p) => $p['data_nascita'] > $data);
+    }
+
+    public function modificaPersona($cf, $nuoviDati) {
+        $persone = $this->leggiPersone();
+        foreach ($persone as &$p) {
+            if ($p['codice_fiscale'] === $cf) {
+                $p = array_merge($p, $nuoviDati);
+                break;
+            }
+        }
+        $this->salvaPersone($persone);
+    }
+
+    public function cancellaPersona($cf) {
+        $persone = array_filter($this->leggiPersone(), fn($p) => $p['codice_fiscale'] !== $cf);
+        $this->salvaPersone($persone);
+    }
+}
+?>
