@@ -1,0 +1,23 @@
+<?php
+session_start();
+require 'classi/GestoreUtenti.php';
+$gestore = new GestoreUtenti();
+
+if ($_POST) {
+    if ($gestore->verificaLogin($_POST['username'], $_POST['password'])) {
+        $_SESSION['utente'] = $_POST['username'];
+        header('Location: dashboard.php');
+        exit;
+    } else {
+        $errore = "Credenziali non valide";
+    }
+}
+?>
+<form method="post">
+    <h2>Login</h2>
+    <input name="username" placeholder="Username" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button>Accedi</button>
+    <p><a href="registrazione.php">Registrati</a></p>
+    <?php if (!empty($errore)) echo "<p style='color:red'>$errore</p>"; ?>
+</form>
