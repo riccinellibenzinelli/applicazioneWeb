@@ -1,0 +1,36 @@
+<?php
+session_start();
+if (!isset($_SESSION['utente'])) { header('Location: index.php'); exit; }
+
+require 'classi/GestorePersone.php';
+$gestore = new GestorePersone();
+
+$persone = $gestore->tutteLePersone();
+if (isset($_GET['cognome'])) $persone = $gestore->trovaPerCognome($_GET['cognome']);
+if (isset($_GET['data'])) $persone = $gestore->nateDopo($_GET['data']);
+?>
+<h2>Elenco persone</h2>
+<a href="aggiungi_persona.php">+ Aggiungi persona</a>
+<form method="get">
+    <input name="cognome" placeholder="Cerca per cognome">
+    <button>Cerca</button>
+</form>
+<form method="get">
+    <input type="date" name="data">
+    <button>Mostra nate dopo</button>
+</form>
+<table border="1">
+<tr><th>CF</th><th>Nome</th><th>Cognome</th><th>Data di nascita</th><th>Azioni</th></tr>
+<?php foreach ($persone as $p): ?>
+<tr>
+<td><?= htmlspecialchars($p['codice_fiscale']) ?></td>
+<td><?= htmlspecialchars($p['nome']) ?></td>
+<td><?= htmlspecialchars($p['cognome']) ?></td>
+<td><?= htmlspecialchars($p['data_nascita']) ?></td>
+<td>
+ <a href="modifica_persona.php?cf=<?= urlencode($p['codice_fiscale']) ?>">Modifica</a> |
+ <a href="cancella_persona.php?cf=<?= urlencode($p['codice_fiscale']) ?>">Elimina</a>
+</td>
+</tr>
+<?php endforeach; ?>
+</table>
